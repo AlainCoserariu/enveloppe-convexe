@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int main(void) {
-    printf("Version 0");
+    printf("Version Alain");
     return 0;
 }
