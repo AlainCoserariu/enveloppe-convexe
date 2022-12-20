@@ -10,17 +10,29 @@
 #include <stdlib.h>
 #include <MLV/MLV_all.h>
 
+/**
+ * @brief Coordonnées d'un point en 2 dimension
+ * 
+ */
 typedef struct {
     double x;
     double y;
 } Point;
 
+/**
+ * @brief Cellule d'une liste polygone
+ * 
+ */
 typedef struct _vertex_ {
     Point *p;  // Un point de l'ensemble
     struct _vertex_ *prec;  // Le vertex précédent
     struct _vertex_ *suiv;  // Le vertex suivant
 } Vertex, *Polygone;
 
+/**
+ * @brief Contient un Polygone est plusieurs renseignements utiles (longeur courent, longueur maximal, longueur moyenne)
+ * 
+ */
 typedef struct {
     Polygone p;  // Polygône représentant l'enveloppe convexe
     int curlen;  // Nombre de points du polygône
@@ -84,6 +96,7 @@ int ajouteVertexPolygone(Polygone *poly, Point *p) {
         return 1;
     }
 
+    // Insére cell en tant que premier élément de *poly 
     cell->suiv = *poly;
     cell->prec = (*poly)->prec;
     (*poly)->prec = cell;
@@ -92,11 +105,46 @@ int ajouteVertexPolygone(Polygone *poly, Point *p) {
 }
 
 /**
+ * @brief Libére la mémoire d'une cellule Vertex **v** contenue dans le polygone **poy**
+ * 
+ * @param v Vertex à libérer
+ * @param poly Polygône contenant le Vertex
+ */
+void freeVertex(Vertex *v, Polygone *poly) {
+    if (v == *poly) {
+        (*poly) = (*poly)->suiv;
+    }
+
+    if (v->suiv == v) {
+        *poly = NULL;
+    }
+
+    (v->prec)->suiv = v->suiv;
+    (v->suiv)->prec = v->prec;
+    free(v);
+}
+
+/**
+ * @brief Libére l'espace alloué par un polygone
+ * 
+ * @param Poly 
+ */
+void freePolygone(Polygone *Poly) {
+    while (*Poly) {
+        freeVertex(*Poly, Poly);
+    }
+}
+
+/**
  * @brief Affiche les coordonnées de chaque Vertex d'un polygone **poly**
  * 
  * @param poly Polygone à afficher
  */
 void printPolygone(Polygone poly) {
+    if (!poly) {
+        return;
+    }
+
     Vertex* tete = poly;
     printf("%f %f\n", poly->p->x, poly->p->y);
     poly = poly->suiv;
@@ -133,13 +181,15 @@ int main(void) {
         a.y++;
     }
 
-    Vertex* cell = allocCellVertex(&(tabPoints[0]));
-    printf("x : %f      y : %f\n", cell->p->x, cell->p->y);
-
     for (k = 0; k < 100; ++k) {
         ajouteVertexPolygone(&Poly, &(tabPoints[k]));
     }
 
+    printPolygone(Poly);
+
+    freePolygone(&Poly);
+
+    printf("Polygone totalement libéré.");
     printPolygone(Poly);
 
     int longueur_fen = 500;
