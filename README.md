@@ -6,6 +6,10 @@ Projet de fin de semestre portant sur les enveloppes convexe modélisé par des 
 
 ## documentation / utilisation :
 
+Mode emploie pour les formes carrées et cercle :
+* Escpace : Arrête l'affichage dynamique (pour aller plus vite notemment)
+* Escape : Stop l'execution et attend une entrée de touche pour quitter le programme
+
 ### Compilation :
 Bibliothèque externe utilisé :
 * [libMLV](http://www-igm.univ-mlv.fr/~boussica/mlv/index.html "Page officiel librairie MLV")

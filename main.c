@@ -541,6 +541,7 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
     Point *tabPoints = (Point*)malloc(nbPoints * sizeof(Point));
     Ensemble e = initEnsemble(tabPoints, nbPoints);
 
+    MLV_Keyboard_button sym = MLV_KEYBOARD_NONE;  // Récupére les potentielles entrées de touches
     int longueur_fen = 500;
     int largeur_fen = 500;
     MLV_create_window("Enveloppe convexe", "", longueur_fen, largeur_fen);
@@ -552,7 +553,8 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
     }
 
     Point pointAleat;
-    for (int k = 0; k < nbPoints; ++k) {
+    int k = 0;
+    while (k < nbPoints && sym != MLV_KEYBOARD_ESCAPE) {
         //Génére un point de type double dans le carré
         pointAleat = generationPoint(centre, rayon, forme);
 
@@ -574,6 +576,13 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
             MLV_actualise_window();
             MLV_clear_window(MLV_COLOR_BLACK);
         }
+
+        MLV_get_event(&sym, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        if (sym == MLV_KEYBOARD_SPACE) {
+            dynamique = 0;
+        }
+
+        k++;
     }
 
     dessineEnsemble(e);
@@ -597,8 +606,8 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
 int main(void) {
     srand(time(NULL));
     
-    mainEnveloppeForme(250, 20, 2000, 1, 1, 1);
-    mainEnveloppeSouris();
+    mainEnveloppeForme(250, 20, 200000, 1, 1, 1);
+    // mainEnveloppeSouris();
 
     printf("\n");
     return 0;
