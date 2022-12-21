@@ -12,3 +12,5 @@ Bibliothèque externe utilisé :
 
 ligne à utiliser pour la compilation (répertoire courent):
 `clang -std=c17 -Wall -Wfatal-errors main.c -lMLV -lm`
+
+Le fichier à executer sera a.out : `./a.out`
