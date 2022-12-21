@@ -11,5 +11,4 @@ Bibliothèque externe utilisé :
 * [libMLV](http://www-igm.univ-mlv.fr/~boussica/mlv/index.html "Page officiel librairie MLV")
 
 ligne à utiliser pour la compilation (répertoire courent):
-
 `clang -std=c17 -Wall -Wfatal-errors main.c -lMLV -lm`
