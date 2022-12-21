@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <MLV/MLV_all.h>
 #include <time.h>
+#include <math.h>
 
+#define M_PI 3.14159265358979323846
 #define BLOC 25
 
 /**
@@ -282,7 +284,7 @@ void majConvexHull(ConvexHull* env_convex) {
  */
 int triangleDirecte(Point a, Point b, Point c) {
     // Comme notre axe des ordonnées n'a pas la même orientation, on change le signe des ordonnées dans la formule
-    int scalaire = ((b.x - a.x) * ((-c.y) - (-a.y))) - ((c.x - a.x) * ((-b.y) - (-a.y)));
+    double scalaire = ((b.x - a.x) * ((-c.y) - (-a.y))) - ((c.x - a.x) * ((-b.y) - (-a.y)));
     if (scalaire >= 0) {
         return 1;
     }
@@ -351,7 +353,7 @@ void majEnveloppeConvex(ConvexHull *env_convex, Point *p) {
     s_j = s_i->suiv;
     while (!triangleDirecte(*(env_convex->p->p), *(s_i->p), *(s_j->p))) {
         freeVertex(s_i, &(env_convex->p));
-        s_i = s_j;
+        s_i = env_convex->p->suiv;
         s_j = s_i->suiv;
         env_convex->curlen--;
     }
@@ -383,6 +385,10 @@ MLV_Event actualiseSouris(Point *souris){
     if (event_type == MLV_MOUSE_BUTTON) {
         souris->x = (double)souris_x;
         souris->y = (double)souris_y;
+
+        // Ajout d'une petite fluctuation pour ne pas avoir deux points superposées
+        souris->x += (double)rand() / RAND_MAX;
+        souris->y += (double)rand() / RAND_MAX;
     }
     
     return event_type;
@@ -396,7 +402,7 @@ MLV_Event actualiseSouris(Point *souris){
 void dessineEnsemble(Ensemble e) {
     int k;
     for (k = 0; k < e.nbPoints; ++k) {
-        MLV_draw_filled_circle((int)e.tabPoints[k].x, (int)e.tabPoints[k].y, 3, MLV_COLOR_BLUE);
+        MLV_draw_filled_circle((int)e.tabPoints[k].x, (int)e.tabPoints[k].y, 2, MLV_COLOR_BLUE);
     }
 }
 
@@ -407,21 +413,57 @@ void dessineEnsemble(Ensemble e) {
  */
 void dessinePolygone(Polygone poly) {
     Vertex *tete = poly;
-    MLV_draw_filled_circle((int)poly->p->x, (int)poly->p->y, 3, MLV_COLOR_RED);
+    MLV_draw_filled_circle((int)poly->p->x, (int)poly->p->y, 2, MLV_COLOR_RED);
     MLV_draw_line((int)poly->p->x, (int)poly->p->y, (int)poly->suiv->p->x, (int)poly->suiv->p->y, MLV_COLOR_RED);
     poly = poly->suiv;
     for (; poly != tete; poly = poly->suiv) {
-        MLV_draw_filled_circle((int)poly->p->x, (int)poly->p->y, 3, MLV_COLOR_RED);
+        MLV_draw_filled_circle((int)poly->p->x, (int)poly->p->y, 2, MLV_COLOR_RED);
         MLV_draw_line((int)poly->p->x, (int)poly->p->y, (int)poly->suiv->p->x, (int)poly->suiv->p->y, MLV_COLOR_RED);
     }
 }
 
+// -----------------Fonctions de génération aléatoire de point-----------------
+
+/**
+ * @brief Génére un point dans une forme de centre **centre** et de demi-côté **rayon**
+ * 
+ * @param centre Centre de la forme
+ * @param rayon rayon du demi-côté
+ * @param forme 0 : Carré \n
+ *              1 : Cercle
+ * @return Point Point généré
+ */
+Point generationPoint(int centre, int rayon, int forme) {
+    Point p;
+    
+    // Distribution dans un carré
+    if (forme == 0) {
+        p.x = (centre - rayon) + (2 * rayon) * (double)rand() / RAND_MAX;
+        p.y = (centre - rayon) + (2 * rayon) * (double)rand() / RAND_MAX;
+        
+    } else {  // Distribution dans un cercle
+        p.x = centre;
+        p.y = centre;
+        double distCentre = rayon * (double)rand() / RAND_MAX;  // distance par rapport au centre
+        double angle = 2 * M_PI * (double)rand() / RAND_MAX;  // Angle aléatoire
+        p.x += distCentre * cos(angle);
+        p.y += distCentre * sin(angle);
+    }
+    return p;
+}
+
 // ---------------------------Vartientes du programme--------------------------
 
-void mainEnveloppeSouris () {
+/**
+ * @brief Lance une fenêtre MLV permettant de positionner des points avec la 
+ * souris et forme l'enveloppe convexe contenant ces points tant qu'on appuie 
+ * pas sur une touche du clavier
+ * 
+ */
+void mainEnveloppeSouris() {
     ConvexHull env_convex = initConvexHull();
 
-    Point *tabPoints = (Point*)malloc(BLOC * sizeof(Point));
+    Point *tabPoints = (Point*)calloc(BLOC, sizeof(Point));
 
     Ensemble e = initEnsemble(tabPoints, BLOC);
 
@@ -439,21 +481,19 @@ void mainEnveloppeSouris () {
             printf("ERREUR LORS DE L'ALLOCATION DE LA MEMOIRE FIN DU PROGRAMME");
             exit(1);
         }
-        // Ajout d'une petite fluctuation pour ne pas avoir deux points superposées
-        souris.x += 1 / ((((rand() % 101) - 50) + 0.001)  * 100);
-        souris.y += 1 / ((((rand() % 101) - 50) + 0.001)  * 100);
-        printf("%f %f", souris.x, souris.y);
 
         // Si on a réalloué la mémoire il faut rediriger les pointeurs de l'enveloppe convexe vers la nouvelle zone mémoire
-        if (!(e.nbPoints % (BLOC))) {
+        if (!(e.nbPoints % (BLOC + 1))) {
             freePolygone(&(env_convex.p));
             env_convex = initConvexHull();
             for (int l = 0; l < e.nbPoints; ++l) {
                 majEnveloppeConvex(&env_convex, &(e.tabPoints[l]));
             }
+            printf("TETE %f %f\n", env_convex.p->p->x, env_convex.p->p->y);
         } else {  // Sinon on met à jour juste avec le dernier point ajouter
             majEnveloppeConvex(&env_convex, &(e.tabPoints[e.nbPoints - 1]));
         }
+        printPolygone(env_convex.p);
 
         printf("ENVELOPPE CONVEXE INFO :\n");
         printf("    curlen = %d \n", env_convex.curlen);
@@ -478,11 +518,86 @@ void mainEnveloppeSouris () {
     freePolygone(&(env_convex.p));
 }
 
+/**
+ * @brief Place des points aléatoirement selon une répartition **forme** de 
+ * centre **centre** et de demi-côté **rayon** puis forme l'enveloppe convexe 
+ * contenant ces points \n
+ * Si le distribution pseudo-spiral est activé, la forme grandit jusqu'à 
+ * atteindre le bord de la fenêtre
+ * 
+ * @param centre Centre de la forme
+ * @param rayon rayon initial du demi-côté
+ * @param nbPoints Nombre de points à générer
+ * @param forme 0 : Carré \n
+ *              1 : Cercle
+ * @param spiral : distribution pseudo-spiral des points        
+ * @param dynamique 1 : Affichage point par point \n
+ *                  0 : Affichage unique une fois l'algorithme fini
+ * 
+ */
+void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int spiral, int dynamique) {
+    ConvexHull env_convex = initConvexHull();
+
+    Point *tabPoints = (Point*)malloc(nbPoints * sizeof(Point));
+    Ensemble e = initEnsemble(tabPoints, nbPoints);
+
+    int longueur_fen = 500;
+    int largeur_fen = 500;
+    MLV_create_window("Enveloppe convexe", "", longueur_fen, largeur_fen);
+
+    double pas = 0;  /* Détérmine le pas pour augmenter le rayon au fur et à 
+                        mesure de l'ajout des points dans le cas d'une distribution spirale */
+    if (spiral) {
+        pas = ((largeur_fen - 20) - (centre + rayon)) / nbPoints;
+    }
+
+    Point pointAleat;
+    for (int k = 0; k < nbPoints; ++k) {
+        //Génére un point de type double dans le carré
+        pointAleat = generationPoint(centre, rayon, forme);
+
+        if (!ajoutePointEnsemble(&e, pointAleat)) {
+            printf("ERREUR LORS DE L'ALLOCATION DE LA MEMOIRE FIN DU PROGRAMME");
+            exit(1);
+        }
+
+        majEnveloppeConvex(&env_convex, &(e.tabPoints[k]));
+
+        if (spiral) {
+            rayon += pas;
+        }
+
+        if (dynamique) {
+            dessineEnsemble(e);
+            dessinePolygone(env_convex.p);
+
+            MLV_actualise_window();
+            MLV_clear_window(MLV_COLOR_BLACK);
+        }
+    }
+
+    dessineEnsemble(e);
+    dessinePolygone(env_convex.p);
+
+    MLV_actualise_window();
+    MLV_clear_window(MLV_COLOR_BLACK);
+
+    // Attend une entrée utilisateur pour quitter le programme
+    MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
+
+    MLV_free_window();
+
+    // Libération de la mémoire
+    free(e.tabPoints);
+    freePolygone(&(env_convex.p));
+}
+
 // ----------------------------Programme principale----------------------------
 
 int main(void) {
     srand(time(NULL));
     
+    mainEnveloppeForme(250, 20, 2000, 1, 1, 1);
     mainEnveloppeSouris();
 
     printf("\n");
