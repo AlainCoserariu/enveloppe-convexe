@@ -483,13 +483,12 @@ void mainEnveloppeSouris() {
         }
 
         // Si on a réalloué la mémoire il faut rediriger les pointeurs de l'enveloppe convexe vers la nouvelle zone mémoire
-        if (!(e.nbPoints % (BLOC + 1))) {
+        if (!((e.nbPoints - 1) % BLOC)) {
             freePolygone(&(env_convex.p));
             env_convex = initConvexHull();
             for (int l = 0; l < e.nbPoints; ++l) {
                 majEnveloppeConvex(&env_convex, &(e.tabPoints[l]));
             }
-            printf("TETE %f %f\n", env_convex.p->p->x, env_convex.p->p->y);
         } else {  // Sinon on met à jour juste avec le dernier point ajouter
             majEnveloppeConvex(&env_convex, &(e.tabPoints[e.nbPoints - 1]));
         }
