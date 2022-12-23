@@ -6,11 +6,9 @@ Projet de fin de semestre portant sur les enveloppes convexe modélisé par des 
 
 ## documentation / utilisation :
 
-Mode emploie pour les formes carrées et cercle :
+Mode emploie lors de la génération des pionts :
 * Espace : Arrête l'affichage dynamique (pour aller plus vite notemment)
 * Echap : Stop l'execution  
-
-Le menu est très intuitif et il n'y a pas d'option en plus du clavier  
   
 Le programme propose deux version, une première contenant le projet de base et une seconde contenant l'option  
 d'enveloppes convexes emboitées, ou chaque point de l'ensemble appartient à une et une seule enveloppe convexe  
@@ -24,3 +22,9 @@ ligne à utiliser pour la compilation (Dans le dossier version1 pour la version 
 `clang -std=c17 -Wall -Wfatal-errors main.c -lMLV -lm`
 
 Le fichier à executer sera a.out : `./a.out`
+
+
+## Autre
+
+Le projet à été réalisé sur GitHub à l'addresse suivante : [https://github.com/AlainCoserariu/enveloppe-convexe.git](https://github.com/AlainCoserariu/enveloppe-convexe.git)  
+D'où le readme en .md
