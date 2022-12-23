@@ -1,0 +1,5 @@
+<map id="ConvexHull" name="ConvexHull">
+<area shape="rect" id="node1" title="Contient un Polygone et plusieurs renseignements utiles (longeur courent, longueur maximal,..." alt="" coords="5,187,103,213"/>
+<area shape="rect" id="node2" href="$struct__vertex__.html" title="Cellule d&#39;une liste polygone." alt="" coords="15,96,93,123"/>
+<area shape="rect" id="node3" href="$struct_point.html" title="Coordonnées d&#39;un point en 2 dimension." alt="" coords="27,5,81,32"/>
+</map>

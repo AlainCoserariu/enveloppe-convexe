@@ -1,0 +1,4 @@
+<map id="Ensemble" name="Ensemble">
+<area shape="rect" id="node1" title="Ensemble de points." alt="" coords="5,95,92,121"/>
+<area shape="rect" id="node2" href="$struct_point.html" title="Coordonnées d&#39;un point en 2 dimension." alt="" coords="21,5,76,32"/>
+</map>

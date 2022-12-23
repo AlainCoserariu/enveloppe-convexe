@@ -6,6 +6,8 @@ Projet de fin de semestre portant sur les enveloppes convexe modélisé par des 
 
 ## documentation / utilisation :
 
+Une documentation doxygen est disponible à la source suivante depuis le répertoire courent : /html/index.html
+
 Mode emploie lors de la génération des points :
 * Espace : Arrête l'affichage dynamique (pour aller plus vite notemment)
 * Echap : Stop l'execution  
