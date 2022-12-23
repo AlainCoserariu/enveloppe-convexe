@@ -28,6 +28,7 @@ Le fichier à executer sera a.out : `./a.out`
 ## Ce qui n'a pas été fait
 
 * Séparer le programme en plusieurs fichiers
+* Ajout des informations sur l'enveloppe convexe en temp réel pour la version 1
 
 ## Autre
 
