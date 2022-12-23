@@ -2,17 +2,17 @@
 Yanis MAATOUK TD 1 TP 2  
 Alain COSERARIU TD 1 TP 2
 
-Projet de fin de semestre portant sur les enveloppes convexe modélisé par des liste chainées en language C.
+Projet de fin de semestre portant sur les enveloppes convexe modélisé par des listes chainées en language C.
 
 ## documentation / utilisation :
 
-Mode emploie lors de la génération des pionts :
+Mode emploie lors de la génération des points :
 * Espace : Arrête l'affichage dynamique (pour aller plus vite notemment)
 * Echap : Stop l'execution  
   
 Le programme propose deux version, une première contenant le projet de base et une seconde contenant l'option  
-d'enveloppes convexes emboitées, ou chaque point de l'ensemble appartient à une et une seule enveloppe convexe  
-Chacune des deux option ont le même fonctionnement du point de vu de l'utilisateur
+d'enveloppes convexes emboitées, où chaque point de l'ensemble appartient à une et une seule enveloppe convexe.  
+Chacune des deux option ont le même fonctionnement du point de vu de l'utilisateur.
 
 ### Compilation :
 Bibliothèque externe utilisé :
@@ -23,8 +23,11 @@ ligne à utiliser pour la compilation (Dans le dossier version1 pour la version 
 
 Le fichier à executer sera a.out : `./a.out`
 
+## Ce qui n'a pas été fait
+
+* Séparer le programme en plusieurs fichiers
 
 ## Autre
 
-Le projet à été réalisé sur GitHub à l'addresse suivante : [https://github.com/AlainCoserariu/enveloppe-convexe.git](https://github.com/AlainCoserariu/enveloppe-convexe.git)  
-D'où le readme en .md
+Le projet à été réalisé sur GitHub à l'addresse suivante : [https://github.com/AlainCoserariu/enveloppe-convexe.git](https://github.com/AlainCoserariu/enveloppe-convexe.git).  
+D'où le readme en .md.
