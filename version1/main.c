@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @author MAATOUK Yanis COSERARIU Alain
+ * @author MAATOUK.Yanis COSERARIU.Alain
  * @brief Projet de programation C portant sur les enveloppes convexes modélisé par des listes chainées (2022-2023)
  * @version 0.1
  * @date 2022-12-19
@@ -45,7 +45,7 @@ typedef struct _vertex_ {
 } Vertex, *Polygone;
 
 /**
- * @brief Contient un Polygone est plusieurs renseignements utiles (longeur courent, longueur maximal, longueur moyenne)
+ * @brief Contient un Polygone et plusieurs renseignements utiles (longeur courent, longueur maximal, longueur moyenne)
  * 
  */
 typedef struct {
