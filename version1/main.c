@@ -473,6 +473,8 @@ void mainEnveloppeSouris() {
     int largeur_fen = 500;
 
     MLV_create_window("Enveloppe convexe", "", longueur_fen, largeur_fen);
+    MLV_clear_window(MLV_rgba(30, 30, 30, 255));
+    MLV_actualise_window();
     
     // Actualise la position de la souris 
     event_type = actualiseSouris(&souris);
@@ -492,7 +494,6 @@ void mainEnveloppeSouris() {
         } else {  // Sinon on met à jour juste avec le dernier point ajouter
             majEnveloppeConvex(&env_convex, &(e.tabPoints[e.nbPoints - 1]));
         }
-        printPolygone(env_convex.p);
 
         printf("ENVELOPPE CONVEXE INFO :\n");
         printf("    curlen = %d \n", env_convex.curlen);
@@ -505,7 +506,7 @@ void mainEnveloppeSouris() {
         dessinePolygone(env_convex.p);
 
         MLV_actualise_window();
-        MLV_clear_window(MLV_COLOR_BLACK);
+        MLV_clear_window(MLV_rgba(30, 30, 30, 255));
         
         event_type = actualiseSouris(&souris);
     }
@@ -544,6 +545,8 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
     int longueur_fen = 500;
     int largeur_fen = 500;
     MLV_create_window("Enveloppe convexe", "", longueur_fen, largeur_fen);
+    MLV_clear_window(MLV_rgba(30, 30, 30, 255));
+    MLV_actualise_window();
 
     double pas = 0;  /* Détérmine le pas pour augmenter le rayon au fur et à 
                         mesure de l'ajout des points dans le cas d'une distribution spirale */
@@ -573,7 +576,7 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
             dessinePolygone(env_convex.p);
 
             MLV_actualise_window();
-            MLV_clear_window(MLV_COLOR_BLACK);
+            MLV_clear_window(MLV_rgba(30, 30, 30, 255));
         }
 
         MLV_get_event(&sym, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -583,12 +586,14 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
 
         k++;
     }
+    if (sym == MLV_KEYBOARD_ESCAPE) {
+        exit(0);
+    }
 
     dessineEnsemble(e);
     dessinePolygone(env_convex.p);
 
     MLV_actualise_window();
-    MLV_clear_window(MLV_COLOR_BLACK);
 
     // Attend une entrée utilisateur pour quitter le programme
     MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
@@ -600,13 +605,237 @@ void mainEnveloppeForme(int centre, double rayon, int nbPoints, int forme, int s
     freePolygone(&(env_convex.p));
 }
 
+// ------------------------------------Menu------------------------------------
+
+/**
+ * @brief Vérifie un point de coordonnées (**x**, **y**) se situe dans un carré de **largeur** par **hauteur** \n
+ * se situent en (**x1**, **y1**) et en (**x2**, **y2**)
+ * 
+ * @param x coordonnées en x du point à vérifier
+ * @param y coordonnées en y du point à vérifier
+ * @param x1 coordonnées en x du coin supérieur gauche du rectangle
+ * @param y1 coordonnées en x du coin supérieur gauche du rectangle
+ * @param largeur Largeur du rectangle
+ * @param hauteur Hauteur du rectangle
+ * @return int 1 : Le point est dans le carré \n
+ *             0 : Le point n'est pas dans le carré
+ */
+int pointDansRectangle(int x, int y, int x1, int y1, int largeur, int hauteur) {
+    if (x1 <= x && x <= x1 + largeur && y1 <= y && y <= y1 + hauteur) {
+        return 1;
+    }
+    return 0;
+}
+
+/**
+ * @brief Dessine un boutton de dimension **largeur** par **hauteur** contenant un texte **text** centré
+ * 
+ * @param x	La coordonnée en x du sommet Nord-Ouest du rectangle.
+ * @param y	La coordonnée en y du sommet Nord-Ouest du rectangle.
+ * @param largeur largeur du boutton
+ * @param hauteur hauteur du boutton
+ * @param text Texte au centre du boutton
+ */
+void dessineBoutton(int x, int y, int largeur, int hauteur, char* text) {
+    MLV_draw_filled_rectangle(x, y, largeur, hauteur, MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255));
+    MLV_draw_text_box(x + 5, y + 5, largeur - 10, hauteur - 10, text, 1, MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255), 
+                        MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255), MLV_rgba(30, 30, 30, 255), MLV_TEXT_CENTER, 
+                        MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+}
+
+/**
+ * @brief Dessine un boutton de dimension **largeur** par **hauteur** contenant un texte **text** centré
+ * 
+ * @param x	La coordonnée en x du sommet Nord-Ouest du rectangle.
+ * @param y	La coordonnée en y du sommet Nord-Ouest du rectangle.
+ * @param largeur largeur du boutton
+ * @param hauteur hauteur du boutton
+ * @param text Texte au centre du boutton
+ */
+void dessineBouttonStyle2(int x, int y, int largeur, int hauteur, char* text) {
+    MLV_draw_filled_rectangle(x, y, largeur, hauteur, MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255));
+    MLV_draw_text_box(x + 5, y + 5, largeur - 10, hauteur - 10, text, 1, MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255), 
+                        MLV_rgba(30, 30, 30, 255), MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255), MLV_TEXT_CENTER, 
+                        MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+}
+
+/**
+ * @brief Affiche deux boutton et attends un clic de souris sur l'un des bouttons
+ * 
+ * @param largeurFen Largeur de la fenêtre
+ * @param hauteurFen Hauteur de la fenêtre
+ * @return int 0 : Boutton souris choisit
+ *             1 : Boutton aléatoire choisit
+ */
+int menu1(int largeurFen, int hauteurFen) {
+    MLV_Keyboard_button sym = MLV_KEYBOARD_NONE;
+    int souris_x;
+    int souris_y;
+
+    int largeurBoutton = 500;
+    int hauteurBoutton = 100;
+    dessineBoutton(largeurFen / 2 - largeurBoutton / 2, hauteurFen / 2 - hauteurBoutton - 15, largeurBoutton, 
+                    hauteurBoutton, "Ajout de points par clic souris");
+    dessineBoutton(largeurFen / 2 - largeurBoutton / 2, hauteurFen / 2 + 15, largeurBoutton, 
+                    hauteurBoutton, "Points distribué aléatoirement");
+
+    MLV_actualise_window();
+    MLV_clear_window(MLV_rgba(30, 30, 30, 255));
+
+    while (sym != MLV_KEYBOARD_ESCAPE) {
+        MLV_wait_keyboard_or_mouse(&sym, NULL, NULL, &souris_x, &souris_y);
+        // L'utilisateur clic sur distribution par clic souris
+        if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 - largeurBoutton / 2, 
+            hauteurFen / 2 - hauteurBoutton - 15, largeurBoutton, hauteurBoutton))
+        {
+            return 0;
+        }
+        // L'utilisateur clic sur distribution aléatoire
+        else if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 - largeurBoutton / 2, 
+            hauteurFen / 2 + 15, largeurBoutton, hauteurBoutton)) 
+        {
+            return 1;
+        }
+    }
+    exit(0);  // Si l'utilisateur appuie sur escape
+}
+
+/**
+ * @brief Menu permettant de choisir les paramètres de l'execution de l'application
+ * 
+ * @param largeurFen Largeur de la fenêtre
+ * @param hauteurFen Hauteur de la fenêtre
+ * @param nbPoints Nombre de point à générer
+ * @param dynamique Affichage dynamique des points
+ * @param forme Distribution qui tends vers un carré ou un cercle
+ * @param spiral Forme qui grandit ou non
+ */
+void menu2(int largeurFen, int hauteurFen, int *nbPoints, int *dynamique, int *forme, int *spiral) {
+    MLV_Keyboard_button sym = MLV_KEYBOARD_NONE;
+    char *nombrePoint;
+    int souris_x;
+    int souris_y;
+
+    int largeurBoutton = 300;
+    int hauteurBoutton = 100;
+
+    while (atoi(nombrePoint) <= 3) {
+        MLV_wait_input_box(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 + 15, 
+                    (largeurBoutton + 15) * 2, 
+                    hauteurBoutton, 
+                    MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255), MLV_rgba(255 - 30, 255 - 30, 255 - 30, 255),
+                    MLV_rgba(30, 30, 30, 255), "Nombre de points à generer (strictement supérieur à 2): ", &nombrePoint);
+    }
+    *nbPoints = atoi(nombrePoint);
+    free(nombrePoint);
+
+
+    dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Affichage dynamique");
+    dessineBoutton(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Forme croissante");
+    dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un cercle");
+    dessineBouttonStyle2(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un carré");
+    dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 + 15, (largeurBoutton + 15) * 2, 
+                    hauteurBoutton, "Lancer la génération !");
+
+    MLV_actualise_window();
+
+    while (sym != MLV_KEYBOARD_ESCAPE) {
+        MLV_wait_keyboard_or_mouse(&sym, NULL, NULL, &souris_x, &souris_y);
+        // L'utilisateur clique sur affichage dynamique
+        if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton))
+        {
+            *dynamique = 1 - *dynamique;  // Bascule de dynamique à non dynamique
+            if (*dynamique) {
+                dessineBouttonStyle2(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Affichage dynamique");
+            } else {
+                dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Affichage dynamique");
+            }
+        }
+        // L'utilisateur clique sur forme croissante
+        else if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton)) 
+        {
+            *spiral = 1 - *spiral;  // Bascule de forme croissante à forme non croissante
+            if (*spiral) {
+                dessineBouttonStyle2(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Forme croissante");
+            } else {
+                dessineBoutton(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Forme croissante");
+            }
+        }
+        // L'utilisateur clique sur cercle
+        else if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton)) 
+        {
+            *forme = 1;  // Passe de carré à cercle ou ne bouge pas
+            dessineBouttonStyle2(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un cercle");
+            dessineBoutton(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un carré");
+        }
+        // L'utilisateur clique sur carré
+        else if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton))
+        {
+            *forme = 0;  // Passe de cercle à carré ou ne bouge pas
+            dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un cercle");
+            dessineBouttonStyle2(largeurFen / 2 + 15, hauteurFen / 2 - hauteurBoutton / 2 - hauteurBoutton, largeurBoutton, 
+                    hauteurBoutton, "Converge vers un carré");
+        } 
+        // Si l'utilisateur clique sur lancer la génération
+        else if (pointDansRectangle(souris_x, souris_y, largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 + 15, (largeurBoutton + 15) * 2, 
+                    hauteurBoutton)){
+            return;
+        }
+
+        // Si on manipule le clavier et qu'on renitialise pas les coordonnées 
+        // de la souris le dernier bouton cliqué s'active
+        souris_x = 0;
+        souris_y = 0;
+        MLV_actualise_window();
+    }
+
+    exit(0);  // Si l'utilisateur appuie sur escape
+}
+
 // ----------------------------Programme principale----------------------------
 
 int main(void) {
     srand(time(NULL));
-    
-    mainEnveloppeForme(250, 20, 200000, 1, 1, 1);
-    // mainEnveloppeSouris();
+
+    // Pour quitter le programme l'utilisateur doit appuyer sur echap ou fermer la fenêtre
+    while (1) {
+        int dynamique = 0;  // Affichaque dynamique ou seulement rendu final
+        int forme = 0;  // 0 : carré 1 : cercle
+        int spiral = 0;  // Rayon de la forme qui grandit ou non
+        int nbPoints = 0;  // Nombre de points de l'ensemble
+
+        MLV_create_window("Menu enveloppe convexe", "", 1000, 900);
+        MLV_clear_window(MLV_rgba(30, 30, 30, 255));
+        MLV_actualise_window();
+
+        if (!menu1(1000, 900)) {
+            MLV_free_window();
+            mainEnveloppeSouris();
+        } else {
+            menu2(1000, 900, &nbPoints, &dynamique, &forme, &spiral);
+            MLV_free_window();
+            if (spiral) {
+                mainEnveloppeForme(250, 10, nbPoints, forme, spiral, dynamique);
+            } else {
+                mainEnveloppeForme(250, 230, nbPoints, forme, spiral, dynamique);
+            }
+        }
+    }
 
     printf("\n");
     return 0;
