@@ -7,8 +7,8 @@ Projet de fin de semestre portant sur les enveloppes convexe modélisé par des 
 ## documentation / utilisation :
 
 Mode emploie pour les formes carrées et cercle :
-* Escpace : Arrête l'affichage dynamique (pour aller plus vite notemment)
-* Escape : Stop l'execution et attend une entrée de touche pour quitter le programme n'importe quand  
+* Espace : Arrête l'affichage dynamique (pour aller plus vite notemment)
+* Echap : Stop l'execution et attend une entrée de touche pour quitter le programme n'importe quand  
 
 Le menu est très intuitif et il n'y a pas d'option en plus du clavier  
   
