@@ -20,7 +20,7 @@ Chacune des deux option ont le même fonctionnement du point de vu de l'utilisat
 Bibliothèque externe utilisé :
 * [libMLV](http://www-igm.univ-mlv.fr/~boussica/mlv/index.html "Page officiel librairie MLV")
 
-ligne à utiliser pour la compilation (répertoire courent):
+ligne à utiliser pour la compilation (Dans le dossier version1 pour la version de base, dans le dossier version2(option) pour les enveloppes emboitées):
 `clang -std=c17 -Wall -Wfatal-errors main.c -lMLV -lm`
 
 Le fichier à executer sera a.out : `./a.out`
