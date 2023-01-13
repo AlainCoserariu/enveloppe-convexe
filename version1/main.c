@@ -712,14 +712,14 @@ int menu1(int largeurFen, int hauteurFen) {
  */
 void menu2(int largeurFen, int hauteurFen, int *nbPoints, int *dynamique, int *forme, int *spiral) {
     MLV_Keyboard_button sym = MLV_KEYBOARD_NONE;
-    char *nombrePoint;
+    char *nombrePoint = "0";
     int souris_x;
     int souris_y;
 
     int largeurBoutton = 300;
     int hauteurBoutton = 100;
 
-    while (atoi(nombrePoint) <= 3) {
+    while (atoi(nombrePoint) <= 2) {
         MLV_wait_input_box(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 + 15, 
                     (largeurBoutton + 15) * 2, 
                     hauteurBoutton, 
@@ -727,7 +727,6 @@ void menu2(int largeurFen, int hauteurFen, int *nbPoints, int *dynamique, int *f
                     MLV_rgba(30, 30, 30, 255), "Nombre de points à generer (strictement supérieur à 2): ", &nombrePoint);
     }
     *nbPoints = atoi(nombrePoint);
-    free(nombrePoint);
 
 
     dessineBoutton(largeurFen / 2 - largeurBoutton - 15, hauteurFen / 2 - hauteurBoutton / 2 - 15 - hauteurBoutton - hauteurBoutton, largeurBoutton, 
