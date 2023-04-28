@@ -32,5 +32,4 @@ Le fichier à executer sera a.out : `./a.out`
 
 ## Autre
 
-Le projet à été réalisé sur GitHub à l'addresse suivante : [https://github.com/AlainCoserariu/enveloppe-convexe.git](https://github.com/AlainCoserariu/enveloppe-convexe.git).  
-D'où le readme en .md.
+Le projet à été réalisé sur GitHub à l'addresse suivante : [https://github.com/AlainCoserariu/enveloppe-convexe.git](https://github.com/AlainCoserariu/enveloppe-convexe.git).
